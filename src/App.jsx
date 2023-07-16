@@ -28,6 +28,7 @@ function Board({ xIsNext, squares, onPlay, currentMove }) {
     } else {
       nextSquares[i] = 'O';
     }
+    nextSquares[9] = i;
     onPlay(nextSquares);
   }
 
@@ -76,7 +77,7 @@ function HistoryPane({ history, jumpTo, currentMove }) {
     if (move != currentMove) {
       let description;
       if (move > 0) {
-        description = 'Go to move #' + move;
+        description = 'Go to move #' + move +` [${Math.floor(squares[9]/3)}, ${squares[9]%3}]`;
       } else {
         description = 'Go to game start';
       }
@@ -87,12 +88,16 @@ function HistoryPane({ history, jumpTo, currentMove }) {
         </li>
       );
     }
-    else
+    else{
+      let cellCoordinate = ''
+      if(squares[9])
+        cellCoordinate = ` [${Math.floor(squares[9]/3)}, ${squares[9]%3}]`
       return (
         <li key={move}>
-          <span>You are at move #{currentMove}</span>
+          <span>You are at move #{currentMove}{cellCoordinate}</span>
         </li>
       )
+    }
   });
 
   if (sortOrder === -1)
@@ -106,12 +111,12 @@ function HistoryPane({ history, jumpTo, currentMove }) {
 }
 
 export default function Game() {
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [history, setHistory] = useState([Array(10).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares, nextCellIndex) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1);
